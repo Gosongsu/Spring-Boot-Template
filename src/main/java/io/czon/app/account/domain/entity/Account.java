@@ -1,12 +1,11 @@
 package io.czon.app.account.domain.entity;
-
-
-import io.czon.app.account.domain.support.ListStringConverter;
 import io.czon.app.domain.entity.AuditingEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,41 +20,25 @@ public class Account extends AuditingEntity {
     @Column(unique = true)
     private String email;
 
-    private String password;
+    @Column(unique = true)
+    private String nickname;
 
-    private boolean isVaild;
+    private String password;
 
     private String emailToken;
 
-    @Embedded
-    private Profile profile;
+    private LocalDateTime joinedAt;
 
-    @Embedded
-    private NotificationSetting notificationSetting;
+    private boolean isVaild;
 
-    @Embeddable
-    @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
-    @Builder @Getter @ToString
-    public static class Profile {
-        private String bio;
-        @Convert(converter = ListStringConverter.class)
-        private List<String> url;
-        private String job;
-        private String location;
-        private String company;
-        @Lob @Basic(fetch = FetchType.EAGER)
-        private String image;
+    public void generateToken() {
+        this.emailToken = UUID.randomUUID().toString();
     }
 
-    @Embeddable
-    @NoArgsConstructor(access = AccessLevel.PROTECTED) @AllArgsConstructor(access = AccessLevel.PROTECTED)
-    @Builder @Getter @ToString
-    public static class NotificationSetting {
-        private boolean studyCreatedByEmail;
-        private boolean studyCreatedByWeb;
-        private boolean studyRegistrationResultByEmailByEmail;
-        private boolean studyRegistrationResultByEmailByWeb;
-        private boolean studyUpdatedByEmail;
-        private boolean studyUpdatedByWeb;
+    public void verified() {
+        this.isVaild = true;
+        joinedAt = LocalDateTime.now();
     }
+
+
 }
